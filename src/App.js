@@ -1,8 +1,12 @@
 import React, { useEffect, useState  } from "react";
-import { CardContent, FormControl, MenuItem, Select, Card, Table, } from "@material-ui/core";
+import { CardContent, FormControl, MenuItem, Select, Card, } from "@material-ui/core";
 import InfoBox from "./InfoBox";
-import Map from './Map';
+import Map from "./Map";
 import './App.css';
+import Table from "./Table";
+import { sortData } from "./util";
+import LineGraph from "./LineGraph";
+import "leaflet/dist/leaflet.css";
  
 function App() {    
   const [countries, setCountries] = useState([]);
@@ -27,8 +31,9 @@ function App() {
           name: country.country,           // United States, United Kingdom
           value: country.countryInfo.iso2     //UK, USA, FR
         }));
-
-        setTableData(data);
+  
+        const sortedData = sortData(data);
+        setTableData(sortedData);
         setCountries(countries); 
      });
    };
@@ -37,7 +42,7 @@ function App() {
    setCountries(countries);
 
       getCountriesData();
-  }, []);
+  }, [countries]);
 
   const onCountryChange = async (event) => {
     const countryCode = event.target.value;
@@ -62,9 +67,9 @@ function App() {
   return ( 
     <div className="app">
      <div className="app__left" > 
-     <div className="app__header">
-      <h1>COVID-19 TRACKER</h1>
-      <FormControl className="app__dropdown">
+      <div className="app__header">
+       <h1>COVID-19 TRACKER</h1>
+        <FormControl className="app__dropdown">
         <Select 
         variant="outlined"
         onChange={onCountryChange}
@@ -82,21 +87,17 @@ function App() {
         <InfoBox title="Coronavirus Cases" cases={countryInfo.todayCases} total={countryInfo.cases}/>
         <InfoBox title="Recovered" cases={countryInfo.todayRecovered} total={countryInfo.recovered}/>
         <InfoBox title="Deaths" cases={countryInfo.todayDeaths} total={countryInfo.deaths}/>
-      {/* Infoboxes title="Coronavirus cases" */}  
-      {/* Infoboxes title="Coronavirus recoveries*/}
-      {/* Infoboxes */}
+
       </div>
     
-      {/* Map */}
       <Map />
       </div> 
       <Card className="app__right">
         <CardContent>
           <h3>Live Cases by Country</h3>
-           <Table countries={tableData}>
-           <h3>Live Cases by Country</h3>
-           </Table>
-           {/* Graph */}  
+           <Table countries={tableData} />
+           <h3>Worldwide New Cases</h3>
+           <LineGraph /> 
         </CardContent>
       </Card>
      </div>
